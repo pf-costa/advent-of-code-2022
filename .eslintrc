@@ -1,0 +1,99 @@
+{
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/typescript"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "css-modules/no-unused-class": [
+      2,
+      {
+        "camelCase": true
+      }
+    ],
+    "css-modules/no-undef-class": [
+      2,
+      {
+        "camelCase": true
+      }
+    ],
+    "import/prefer-default-export": 0,
+    "jsx-a11y/anchor-is-valid": 0,
+    "newline-after-var": 2,
+    "newline-before-return": 2,
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      {
+        "functions": false,
+        "classes": true
+      }
+    ],
+    "prettier/prettier": "error",
+    "react/jsx-curly-brace-presence": "warn",
+    "react/jsx-one-expression-per-line": 0,
+    "react-hooks/exhaustive-deps": "warn",
+    "react/jsx-props-no-spreading": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "ts": "never",
+        "tsx": "never",
+        "js": "never",
+        "jsx": "never",
+        "mjs": "never"
+      }
+    ],
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "lodash/prefer-lodash-method": "off",
+    "lodash/prefer-constant": "off",
+    "lodash/prefer-noop": "off",
+    "react/jsx-filename-extension": [
+      2,
+      {
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
+      }
+    ],
+    "import/no-extraneous-dependencies": [
+      "off",
+      {
+        "devDependencies": true,
+        "optionalDependencies": false,
+        "peerDependencies": false
+      }
+    ],
+    "react/require-default-props": "off",
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": [
+      "error"
+    ],
+    "header/header": [
+      2,
+      "copyright.js"
+    ],
+    "testing-library/no-node-access": "off",
+    "sonarjs/no-duplicate-string": "off"
+  },
+  "env": {
+    "jest": true
+  }
+}
