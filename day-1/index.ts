@@ -3,7 +3,7 @@ import fs from "fs";
 
 const txt = fs.readFileSync(path.resolve(__dirname, "input.txt")).toString();
 
-const mostCalories = txt
+const caloriesByElf = txt
   .split("\n")
   .reduce(
     (acc, current) => {
@@ -21,4 +21,8 @@ const mostCalories = txt
   )
   .sort((a, b) => b - a);
 
-console.log(mostCalories[0]);
+console.log("Most calories", caloriesByElf[0]);
+console.log(
+  "Total top 3 calories",
+  caloriesByElf.slice(0, 3).reduce((t, c) => t + c)
+);
