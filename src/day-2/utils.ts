@@ -1,12 +1,12 @@
-import { debug } from "console";
-import { readInput } from "./utils";
-
 // Order of the arrays
 // - Rock
 // - Paper
+
+import { readInput } from "../utils";
+
 // - Scissors
-const items = Object.freeze(["A", "B", "C"]);
-const choices = Object.freeze(["X", "Y", "Z"]);
+export const items = Object.freeze(["A", "B", "C"]);
+export const choices = Object.freeze(["X", "Y", "Z"]);
 
 enum Result {
   Loss = 0,
@@ -14,9 +14,9 @@ enum Result {
   Victory = 6,
 }
 
-const txt = readInput(2);
+export const input = readInput(2);
 
-const getRoundOutcome = (challenger: string, player: string) => {
+export const getRoundOutcome = (challenger: string, player: string) => {
   const index1 = items.indexOf(challenger);
   const index2 = choices.indexOf(player);
 
@@ -37,11 +37,3 @@ const getRoundOutcome = (challenger: string, player: string) => {
 
   return [value, result];
 };
-
-const total = txt.reduce((acc, round) => {
-  const [challenger, player] = round.split(" ");
-  const [value, result] = getRoundOutcome(challenger, player);
-  return acc + value + result;
-}, 0);
-
-console.log(total);
