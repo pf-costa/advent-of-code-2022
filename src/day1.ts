@@ -1,10 +1,8 @@
-import path from "path";
-import fs from "fs";
+import { readInput } from "./utils";
 
-const txt = fs.readFileSync(path.resolve(__dirname, "input.txt")).toString();
+const txt = readInput(1);
 
 const caloriesByElf = txt
-  .split("\n")
   .reduce(
     (acc, current) => {
       if (current.length === 0) {

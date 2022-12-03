@@ -1,4 +1,4 @@
 *node_modules
 *dist
 .eslintcache
-input.txt
+*inputs
