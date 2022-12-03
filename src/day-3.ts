@@ -6,15 +6,9 @@ const getCompartments = (rucksack: string) => {
 };
 
 const getCommonItem = (...compartments: string[]) => {
-  let chars: any = {};
   const [first, ...others] = compartments.sort((a, b) => b.length - a.length);
 
-  return Array.from(first)
-    .map((c) => {
-      chars[c] = c;
-      return c;
-    })
-    .find((c) => others.every((o) => o.includes(c)));
+  return Array.from(first).find((c) => others.every((o) => o.includes(c)));
 };
 
 const getPriority = (item: string | undefined) => {
