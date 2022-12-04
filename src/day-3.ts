@@ -1,4 +1,5 @@
-import { readInput, toChunks } from "./utils";
+import { readInput } from "./utils";
+import { chunk } from "lodash";
 
 const getCompartments = (rucksack: string) => {
   const half = Math.round(rucksack.length / 2);
@@ -35,7 +36,7 @@ const total = input.reduce((acc, rucksack) => {
 }, 0);
 
 // Challenge 2
-const total2 = toChunks(input, 3).reduce((acc, chunk) => {
+const total2 = chunk(input, 3).reduce((acc, chunk) => {
   const commonItem = getCommonItem(...chunk);
   const priority = getPriority(commonItem);
 
