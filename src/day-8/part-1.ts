@@ -1,19 +1,8 @@
-import { memoize, overSome } from "lodash";
-import { readInput } from "../utils";
+import { overSome } from "lodash";
+import { input } from "../day-2/utils";
+import { getColumn, getTrees } from "./utils";
 
-const input = readInput(8);
-
-const trees: Array<Array<number>> = [];
-
-input.forEach((line) => {
-  const columns: Array<number> = [];
-
-  for (let index = 0; index < line.length; index++) {
-    columns.push(+line[index]);
-  }
-
-  trees.push(columns);
-});
+const trees = getTrees();
 
 const totalRows = input.length;
 const totalColumns = input[0].length;
@@ -24,25 +13,18 @@ type Tree = {
   value: number;
 };
 
-const getColumn = memoize((index) => {
-  return input.reduce(
-    (acc, line) => acc.concat(+line[index]),
-    [] as Array<number>
-  );
-});
-
 const isVisibleWithNeighbours = (tree: Tree, neighbours: number[]) => {
   return neighbours.every((n) => n < tree.value);
 };
 
 const isVisibleFromTop = (tree: Tree) => {
-  const column = getColumn(tree.column);
+  const column = getColumn(trees, tree.column);
 
   return isVisibleWithNeighbours(tree, column.slice(0, tree.row));
 };
 
 const isVisibleFromBottom = (tree: Tree) => {
-  const column = getColumn(tree.column);
+  const column = getColumn(trees, tree.column);
 
   return isVisibleWithNeighbours(tree, column.slice(tree.row + 1));
 };
