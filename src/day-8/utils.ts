@@ -1,5 +1,11 @@
-import { memoize } from "lodash";
+import { memoize, values } from "lodash";
 import { readInput } from "../utils";
+
+export type Tree = {
+  row: number;
+  column: number;
+  value: number;
+};
 
 export const getTrees = () => {
   const input = readInput(8);
@@ -18,9 +24,14 @@ export const getTrees = () => {
   return trees;
 };
 
-export const getColumn = memoize((trees: Array<Array<number>>, index) => {
-  return trees.reduce(
-    (acc, line) => acc.concat(+line[index]),
-    [] as Array<number>
-  );
-});
+export const getColumn = memoize(
+  (trees: Array<Array<number>>, index) => {
+    return trees.reduce(
+      (acc, line) => acc.concat(+line[index]),
+      [] as Array<number>
+    );
+  },
+  (...args) => {
+    return args[1].toString();
+  }
+);

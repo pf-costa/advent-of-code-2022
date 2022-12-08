@@ -1,17 +1,9 @@
 import { overSome } from "lodash";
-import { input } from "../day-2/utils";
-import { getColumn, getTrees } from "./utils";
+import { getColumn, getTrees, Tree } from "./utils";
 
 const trees = getTrees();
-
-const totalRows = input.length;
-const totalColumns = input[0].length;
-
-type Tree = {
-  row: number;
-  column: number;
-  value: number;
-};
+const totalRows = trees.length;
+const totalColumns = trees[0].length;
 
 const isVisibleWithNeighbours = (tree: Tree, neighbours: number[]) => {
   return neighbours.every((n) => n < tree.value);
