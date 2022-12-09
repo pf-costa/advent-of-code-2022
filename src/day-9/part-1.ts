@@ -1,12 +1,8 @@
 import { readInput } from "../utils";
 import { getCommand, movePoint } from "./utils";
+import { Point } from "./vector";
 
 const input = readInput(9);
-
-type Point = {
-  x: number;
-  y: number;
-};
 
 const visitedPositions = new Set<string>();
 

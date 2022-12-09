@@ -1,4 +1,4 @@
-import { normalize, Point } from "./vector";
+import { create, normalize, Point } from "./vector";
 
 export const getCommand = (
   line: string
@@ -52,10 +52,7 @@ export const getCommand = (
 };
 
 export const movePoint = (tail: Point, position: Point) => {
-  const vector: Point = {
-    x: tail.x - position.x,
-    y: tail.y - position.y,
-  };
+  const vector: Point = create(position, tail);
 
   const { x, y } = vector;
 
