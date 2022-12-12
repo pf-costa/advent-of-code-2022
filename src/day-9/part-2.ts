@@ -1,4 +1,4 @@
-import { readInput } from "../utils/readInput";
+import readInput from "../utils/readInput";
 import { getCommand, movePoint } from "./utils";
 
 const input = readInput(9);

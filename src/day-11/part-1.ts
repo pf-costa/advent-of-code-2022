@@ -1,4 +1,4 @@
-import { readInput } from "../utils/readInput";
+import readInput from "../utils/readInput";
 import { getMonkeys, processMonkey, sortByCounter } from "./utils";
 
 let input = readInput(11);
