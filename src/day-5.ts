@@ -1,4 +1,4 @@
-import { readInput } from "./utils";
+import readInput from "./utils/readInput";
 
 const getCommand = (line: string) => {
   const [quantity, from, to] = Array.from(line.matchAll(/(\d+)/g)).map(

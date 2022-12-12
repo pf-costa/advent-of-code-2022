@@ -2,7 +2,7 @@
 // - Rock
 // - Paper
 
-import { readInput } from "../utils";
+import { readInput } from "../utils/readInput";
 
 // - Scissors
 export const items = Object.freeze(["A", "B", "C"]);

@@ -1,4 +1,4 @@
-import { readInput } from "../utils";
+import { readInput } from "../utils/readInput";
 import { getCommand, movePoint } from "./utils";
 import { Point } from "./vector";
 

@@ -1,4 +1,4 @@
-import { readInput } from "./utils";
+import readInput from "./utils/readInput";
 
 // Just one line
 const input = readInput(6)[0];

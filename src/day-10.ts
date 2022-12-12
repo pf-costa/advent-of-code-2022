@@ -1,4 +1,4 @@
-import { readInput } from "./utils";
+import readInput from "./utils/readInput";
 
 const input = readInput(10);
 

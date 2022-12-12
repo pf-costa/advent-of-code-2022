@@ -1,4 +1,4 @@
-import { readInput } from "./utils";
+import readInput from "./utils/readInput";
 
 type File = {
   name: string;

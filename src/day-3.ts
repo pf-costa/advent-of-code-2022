@@ -1,4 +1,4 @@
-import { readInput } from "./utils";
+import readInput from "./utils/readInput";
 import { chunk } from "lodash";
 
 const getCompartments = (rucksack: string) => {

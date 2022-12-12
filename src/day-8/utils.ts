@@ -1,5 +1,5 @@
 import { memoize, values } from "lodash";
-import { readInput } from "../utils";
+import { readInput } from "../utils/readInput";
 
 export type Tree = {
   row: number;
