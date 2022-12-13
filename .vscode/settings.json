@@ -20,5 +20,5 @@
   },
   "editor.tabSize": 4,
   "editor.formatOnSave": true,
-  "editor.bracketPairColorization.enabled": true,
+  "editor.bracketPairColorization.enabled": true
 }
