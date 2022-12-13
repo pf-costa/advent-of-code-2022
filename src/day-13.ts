@@ -106,6 +106,7 @@ const result = pairs.reduce((acc, p, index) => {
 
 console.log(result);
 
+// Part 2
 const divider1: Item = [[2]];
 const divider2: Item = [[6]];
 
