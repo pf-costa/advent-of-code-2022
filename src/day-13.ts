@@ -13,7 +13,7 @@ export const getPairs = (input: string[]) => {
   while (input.length > 0) {
     const index = input.findIndex((i) => i == "");
 
-    // Get the lines that represent a monkey's instructions
+    // Get the lines that represent a pair of arrays
     const items = input.slice(0, index === -1 ? undefined : index);
 
     pairs.push([getItem(items[0]), getItem(items[1])]);
