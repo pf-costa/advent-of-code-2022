@@ -20,20 +20,31 @@ const sensors = readInput(15).map((l) => {
   };
 });
 
+// Part 1 / 2
+const max = 4000000;
+const getValue = (v: number) => {
+  if (v < 0) {
+    return 0;
+  }
+
+  return v > max ? max : v;
+};
+
 const getOccupiedPositions = (row: number) => {
   const items = sensors
     .filter(({ y, distance }) => y - distance <= row && y + distance >= row)
+
     // For each matching sensor compute the intersection
     .flatMap(({ y, x, distance }) => {
       if (y === row) {
-        return { from: x - distance, to: x + distance };
+        return { from: getValue(x - distance), to: getValue(x + distance) };
       }
 
       const index = row > y ? row - y : y - row;
 
       return {
-        from: x - distance + index,
-        to: x + distance - index,
+        from: getValue(x - distance + index),
+        to: getValue(x + distance - index),
       };
     });
 
@@ -59,7 +70,28 @@ const getOccupiedPositions = (row: number) => {
       return acc.concat(current);
     }, [] as Line[]);
 
-  return lines.reduce((acc, l) => acc + (l.to - l.from), 0);
+  const count = lines.reduce((acc, l) => acc + (l.to - l.from), 0);
+
+  return {
+    lines,
+    count,
+  };
 };
 
-console.log(getOccupiedPositions(2000000));
+// Part 1
+//getOccupiedPositions(2000000);
+
+// Part 2
+for (let i = 0; i < max; i++) {
+  const { lines, count } = getOccupiedPositions(i);
+
+  if (max - count === 2 && lines.length === 2) {
+    console.log(lines, count);
+
+    const x = lines[0].to + 1;
+    const frequency = x * 4000000 + i;
+    console.log(frequency);
+
+    break;
+  }
+}
