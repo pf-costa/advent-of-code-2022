@@ -2,7 +2,7 @@ import PriorityQueue from "./PriorityQueue";
 export type Graph = Record<string, Record<string, number>>;
 
 // Dijkstra's algoritm
-const shortestPath = (graph: Graph, start: string, end: string) => {
+const shortestPath = (graph: Graph, start: string, end?: string) => {
   const visited = new Set<string>();
 
   const previous = new Map<string, string>();
@@ -64,6 +64,8 @@ const shortestPath = (graph: Graph, start: string, end: string) => {
       }
     });
   }
+
+  return previous;
 };
 
 export default shortestPath;

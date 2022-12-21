@@ -17,6 +17,7 @@
             ],
             "cwd": "${workspaceRoot}",
             "protocol": "inspector",
+            "outputCapture": "std",
             "internalConsoleOptions": "openOnSessionStart"
         }
     ]
