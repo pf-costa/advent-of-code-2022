@@ -2,6 +2,7 @@ import readInput from "../utils/readInput";
 import { Graph } from "../utils/shortestPath";
 import createStateMachine, { State } from "./createStateMachine";
 import floydWarshall from "../utils/floydWarshall";
+import { curry, memoize } from "lodash";
 
 const graph: Graph = {};
 const valves = new Map<string, number>();
@@ -32,8 +33,6 @@ readInput(16).map((l) => {
   graph[valve] = { ...edges };
 });
 
-const withElephant = false;
-const maxTicks = 30;
 const startValve = "AA";
 const { distances, vertexIndices } = floydWarshall(graph);
 
@@ -43,79 +42,51 @@ const getDistance = (from: string, to: string) => {
   return distances[index][nextIndex];
 };
 
-const state = createStateMachine(valves, startValve, getDistance);
-
-const bfs = (root: State, bestPath: string[] | undefined) => {
-  let queue: Array<State> = [];
-  queue.push(root);
-
-  let maxPressure = -Infinity;
-  let bestState: State = root;
-
-  let state: State | undefined;
-
-  const assureLast = (s: State) => {};
-
-  while (queue.length > 0) {
-    // Get all valid neighbours
-    state = queue.pop();
-
-    if (!state) {
-      break;
-    }
-
-    if (bestPath && state.valve !== bestPath[0]) {
-      continue;
-    }
-
-    bestPath?.shift();
+const deepFirstSearch = memoize(
+  (state: State): [number, string[]] => {
+    let maxPressure = 0;
+    let bestPath: string[] = [];
 
     for (let valve of state.unOpenedValves) {
-      if (bestPath && valve !== bestPath[0]) {
-        continue;
-      }
-
-      let next = state.openValve(valve);
+      const next = state.openValve(valve);
 
       if (!next) {
         continue;
       }
 
-      if (maxPressure < next.pressure) {
-        maxPressure = next.pressure;
-        bestState = next;
-      }
+      let [pressure, path] = deepFirstSearch(next);
 
-      queue.push(next);
-    }
-
-    // Have we reach the end of line?
-    if (state.unOpenedValves.length === 0 && maxTicks > state.ticks) {
-      // If so compute the remainder pressure
-      let pressure = state.pressure + (maxTicks - state.ticks) * state.flowRate;
-
-      if (maxPressure < pressure) {
-        maxPressure = pressure;
+      if (next.pressure + pressure > maxPressure) {
+        maxPressure = next.pressure + pressure;
+        bestPath = [next.valve, ...path];
       }
     }
+
+    return [maxPressure, bestPath];
+  },
+  (state) => {
+    return `${state.ticks}-${state.unOpenedValves.join()}-${state.valve}}-${
+      state.flowRate
+    }-${state.pressure}`;
   }
+);
 
-  let last = bestState;
-  const path = [];
-  while (last) {
-    path.push(
-      last.valve + " " + last.ticks + " " + last.pressure + " " + last.flowRate
-    );
+const allValves = Array.from(valves.keys());
+const createState = curry(createStateMachine)(valves, startValve, getDistance);
 
-    last = last.previous as State;
-  }
+// Part 1
+let state = createState(30);
+let [maxPressure, path] = deepFirstSearch(state);
+console.log("Part 1", maxPressure);
 
-  path.reverse().forEach((p) => console.log(p));
+// Part 2
+// Human goes first
+state = createState(26);
+[maxPressure, path] = deepFirstSearch(state);
 
-  return maxPressure;
-};
+// Then the elephant
+state = createState(26);
+state.unOpenedValves = allValves.filter((a) => !path.includes(a));
 
-const max = bfs(state, undefined);
-console.log(max);
-
-// assert.equal(max, sol[1]);
+let [maxPressureElephant] = deepFirstSearch(state);
+console.log("Part 2", maxPressure + maxPressureElephant);
