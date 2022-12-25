@@ -1,9 +1,11 @@
 import readInput from "./utils/readInput";
 import ansi from "ansi";
-import { max } from "lodash";
+import { last, max } from "lodash";
 const cursor = ansi(process.stdout);
 cursor.queryPosition();
 import execute from "./utils/execute";
+
+type Board = Array<Array<number>>;
 
 enum Direction {
   Left = "<",
@@ -49,7 +51,7 @@ type PileItem = {
 
 const boardWidth = 7;
 
-function mergeWithBoard(item: PileItem, board: Array<Array<number>>) {
+function mergeWithBoard(item: PileItem, board: Board) {
   // From the current position and pattern
   // Check if the in board we collide with any place
   for (let lineIndex = 0; lineIndex < item.pattern.length; lineIndex++) {
@@ -67,7 +69,7 @@ function mergeWithBoard(item: PileItem, board: Array<Array<number>>) {
   }
 }
 
-function checkCollision(item: PileItem, board: Array<Array<number>>) {
+function checkCollision(item: PileItem, board: Board) {
   // From the current position and pattern
   // Check if the in board we collide with any place
   for (let lineIndex = 0; lineIndex < item.pattern.length; lineIndex++) {
@@ -89,11 +91,7 @@ function checkCollision(item: PileItem, board: Array<Array<number>>) {
   return false;
 }
 
-function moveRock(
-  item: PileItem,
-  board: Array<Array<number>>,
-  direction: Direction
-) {
+function moveRock(item: PileItem, board: Board, direction: Direction) {
   let newItem = { ...item };
 
   if (direction === Direction.Left) {
@@ -122,7 +120,7 @@ function moveRock(
   return newItem;
 }
 
-const getHighestRock = (board: Array<Array<number>>) => {
+const getHighestRock = (board: Board) => {
   if (board.length === 0) {
     return 0;
   }
@@ -136,20 +134,98 @@ const getHighestRock = (board: Array<Array<number>>) => {
   return 0;
 };
 
-function* processBoard(rocks = 2022) {
-  const board: Array<Array<number>> = [];
+type Pattern = {
+  heights: number[];
+  rockIndexes: number[];
+};
 
-  // Rested pieces
-  let jetIndex = 0;
-  let patternIndex = 0;
-  let previous: PileItem | undefined = undefined;
+function* processBoard(
+  rocks = 2022,
+  jetIndex = 0,
+  patternIndex = 0,
+  board: Board = []
+) {
+  let purgedItems = 0;
+  const patternRepetitions = 10;
+  let previous;
+
+  // For every fixed size input, there shall be a point where a pattern emerges
+  // Store all the combinations
+  const repetitions = new Map<string, Pattern>();
+
+  const addEntry = (rockIndex: number) => {
+    // Get the integer value from the line
+    const line = board[board.length - 1].reduce((acc, val) => {
+      return (acc << 1) | val;
+    }, 0);
+
+    const key = `${patternIndex}-${jetIndex}-${line}`;
+    const entry = repetitions.get(key);
+
+    if (!entry) {
+      repetitions.set(key, {
+        heights: [board.length],
+        rockIndexes: [rockIndex],
+      });
+      return false;
+    }
+
+    // If we are starting to have a 3rd repeated pattern
+    // We can safely assume that the rest of the sequence is going to be the same
+    if (entry.heights.length === patternRepetitions) {
+      return true;
+    }
+
+    entry.heights.push(board.length);
+    entry.rockIndexes.push(rockIndex);
+
+    return false;
+  };
+
+  const getBoardHeight = () => {
+    const pattern = Array.from(repetitions.entries()).filter(
+      (e) => e[1].heights.length === patternRepetitions
+    );
+
+    const all = Array.from(repetitions.entries())
+      .filter((e) => e[1].heights.length !== patternRepetitions)
+      .flatMap((e) => e[1].heights);
+
+    if (pattern.length === 0) {
+      return board.length;
+    }
+
+    const { heights, rockIndexes } = pattern.at(0)?.[1];
+    const patternSize = heights[1] - heights[0];
+
+    const neededRocks = rockIndexes[1] - rockIndexes[0];
+    const initialRocks = rockIndexes[0] - 1;
+
+    const groups = Math.floor((rocks - initialRocks) / neededRocks);
+    let height = groups * patternSize + heights[0];
+
+    const rest = (rocks - initialRocks) % neededRocks;
+
+    if (rest > 0) {
+      let newBoard = board.slice(board.length - patternSize);
+
+      // Process remaining rocks
+      let entry = last(
+        Array.from(processBoard(rest, jetIndex, patternIndex, newBoard))
+      );
+
+      height += entry.board.length - patternSize;
+    }
+
+    return height;
+  };
 
   for (let rockIndex = 0; rockIndex < rocks; rockIndex++) {
     const y = getHighestRock(board);
 
     let item: PileItem = {
       x: 2,
-      y: y + 3,
+      y: y + purgedItems + 3,
       pattern: patterns[patternIndex],
     };
 
@@ -174,6 +250,15 @@ function* processBoard(rocks = 2022) {
 
       if (next.y === item.y) {
         mergeWithBoard(next, board);
+
+        if (addEntry(rockIndex)) {
+          const boardHeight = getBoardHeight();
+
+          return {
+            boardHeight: boardHeight,
+          };
+        }
+
         yield { board, item: undefined, jet: "" };
         break;
       }
@@ -190,24 +275,20 @@ function* processBoard(rocks = 2022) {
     }
   }
 
-  return { board, item: undefined, jet: jetPattern[jetIndex] };
+  const boardHeight = getBoardHeight();
+
+  return {
+    boardHeight,
+  };
 }
 
-const b: Array<Array<number>> = [];
-
-mergeWithBoard({ x: 3, y: 0, pattern: cross }, b);
-let n = moveRock({ x: 0, y: 0, pattern: lshape }, b, Direction.Right);
-
-console.table(b.reverse());
-
-const input2 = readInput(18).map((l) => +l);
-
 (async () => {
-  const processor = processBoard();
+  const rocks = 1_000_000_000_000;
+  const processor = processBoard(rocks);
   const floor = `+${new Array(boardWidth).fill("-").join("")}+`;
   let tick = 0;
   let boardHeight = 0;
-  const withAnimation = false;
+  const animationInterval = 0;
   let complete = 0;
 
   execute((stop) => {
@@ -216,21 +297,20 @@ const input2 = readInput(18).map((l) => +l);
     tick++;
 
     if (done) {
-      const r = value.board.length;
-      console.log(r);
+      console.log(value.boardHeight);
+
       stop();
       return;
     }
 
-    const { board, item, jet } = value;
+    const { board, item, jet } = value as any;
 
-    if (!item) {
-      //   assert.equal(board.length, input2[complete]);
-      complete++;
+    if (!animationInterval) {
+      return;
     }
 
-    if (!withAnimation) {
-      return;
+    if (!item) {
+      complete++;
     }
 
     let drawing: string[] = [];
@@ -256,19 +336,17 @@ const input2 = readInput(18).map((l) => +l);
         return l === 1 ? Chars.Resting : Chars.Void;
       });
 
-      drawing.push(`|${line.join("")}|`);
+      drawing.push(`|${line.join("")}| ${y}`);
     }
 
-    drawing = drawing.reverse().slice(drawing.length - 200);
+    drawing = drawing.reverse();
     drawing.push(floor);
     drawing.push("Jet " + jet);
     drawing.push("Tick " + tick);
     drawing.push("\n\n");
 
-    console.clear();
-
     cursor.eraseData();
     cursor.goto(0, 0);
     cursor.write(drawing.join("\n"));
-  }, 0);
+  }, animationInterval);
 })();
