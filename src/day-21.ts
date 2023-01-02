@@ -1,6 +1,9 @@
 import assert from "assert";
 import readInputs from "./utils/readInputs";
 
+var nerdamer = require("nerdamer");
+require("nerdamer/Solve");
+
 const { input, example } = readInputs(21);
 
 type Operation = () => number;
@@ -9,6 +12,7 @@ type Monkey = {
   operation: Operation;
   monkeys?: [string, string];
   operator?: Operator;
+  value?: number;
 };
 
 const parseLine = (l: string) => {
@@ -36,6 +40,7 @@ const parse = (lines: string[]) => {
     if (tokens.length === 2) {
       monkeys.set(tokens[0] as string, {
         operation: () => tokens[1] as number,
+        value: +tokens[1],
       });
       return;
     }
@@ -202,11 +207,41 @@ const solve2 = (lines: string[]) => {
   }
 };
 
+const solve3 = (lines: string[]) => {
+  const monkeys = parse(lines);
+
+  const getEquation = ({ value, monkeys: dependants, operator }: Monkey) => {
+    if (value) {
+      return value;
+    }
+
+    const [part1, part2] = dependants.map((d) => {
+      if (d === "humn") {
+        return d;
+      }
+
+      return getEquation(monkeys.get(d));
+    });
+
+    return `(${part1} ${operator} ${part2})`;
+  };
+
+  const { monkeys: dependants } = monkeys.get("root");
+
+  // Get the equation
+  let part1 = getEquation(monkeys.get(dependants[0]));
+  let part2 = getEquation(monkeys.get(dependants[1]));
+
+  const equation = nerdamer.solveEquations(`${part1} = ${part2}`, "humn");
+
+  return equation[0];
+};
+
 // Part 1
 assert.equal(solve1(example), 152);
 assert.equal(solve1(input), 157714751182692);
 
 // Part 2
-assert.equal(solve2(example), 301);
+assert.equal(solve3(example), 301);
 
-console.log(solve2(input));
+console.log(solve3(input));
