@@ -106,4 +106,4 @@ const poss = Array.from(getCoordFor("a"))
   .filter((p) => p !== undefined && p !== null)
   .sort((p1, p2) => (p1 as any)?.length - (p2 as any)?.length);
 
-console.log(poss[0]?.length);
+console.log((poss[0] as any)?.length);

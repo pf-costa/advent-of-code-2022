@@ -6,7 +6,7 @@ const readInput = (day: number, example = false) =>
     .readFileSync(
       path.resolve(
         __dirname,
-        `../../inputs/input-${day}${example ? "-example" : ""}.txt`
+        `../../../inputs/input-${day}${example ? "-example" : ""}.txt`
       )
     )
     .toString()

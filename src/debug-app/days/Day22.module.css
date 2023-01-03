@@ -1,0 +1,5 @@
+.board span{
+    width: 21px;
+    height: 21px;
+    display: inline-block;
+}
