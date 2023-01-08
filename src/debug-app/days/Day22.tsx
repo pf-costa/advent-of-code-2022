@@ -1,13 +1,16 @@
 import {
   process,
-  getData,
   Player,
   Direction,
+  getOnOutOfBounds1,
 } from "../../advent-of-code-2022/day-22/solve";
-import example from "../../../inputs/input-22.txt";
+import input from "../../../inputs/input-22.txt";
 import { useEffect, useState } from "react";
 import styles from "./Day22.module.css";
 import { flushSync } from "react-dom";
+import { getData } from "../../advent-of-code-2022/day-22/getData";
+
+const cubeSize = 4;
 
 const Day22 = () => {
   const [data, setData] = useState<ReturnType<typeof getData>>(null);
@@ -17,44 +20,66 @@ const Day22 = () => {
   const [instruction, setInstruction] = useState<number | string>();
 
   useEffect(() => {
-    const map = example.split("\n");
+    const map = input.split("\n");
 
     setLines(map.slice(0, map.length - 2));
-    const data = getData(map);
+    const data = getData(map, cubeSize);
+    const onOutOfBounds = getOnOutOfBounds1(data.tiles);
     setData(data);
-    const processor = process(data.player, data.tiles, data.instructions);
+
+    const processor = process(
+      data.player,
+      data.tiles,
+      data.instructions,
+      onOutOfBounds
+    );
     setPlayer(data.player);
     setVisited((v) => v.concat({ ...data.player }));
 
+    const step = () => {
+      const { value, done } = processor.next();
+
+      if (done) {
+        flushSync(() => {
+          setInstruction("Done");
+        });
+      }
+
+      if (!value) {
+        return;
+      }
+
+      const { instruction, player } = value;
+
+      if (player) {
+        console.log(player);
+
+        flushSync(() => {
+          setVisited((v) => v.concat(player));
+          setPlayer(player);
+        });
+      }
+
+      if (instruction) {
+        flushSync(() => {
+          setInstruction(instruction);
+        });
+      }
+    };
+
+    let interval;
+
     window.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") {
-        const { value, done } = processor.next();
+        step();
+      }
 
-        if (done) {
-          flushSync(() => {
-            setInstruction("Done");
-          });
-        }
-
-        if (!value) {
-          return;
-        }
-
-        const { instruction, player } = value;
-
-        if (player) {
-          console.log(player);
-
-          flushSync(() => {
-            setVisited((v) => v.concat(player));
-            setPlayer(player);
-          });
-        }
-
-        if (instruction) {
-          flushSync(() => {
-            setInstruction(instruction);
-          });
+      if (e.key === " ") {
+        if (interval) {
+          clearInterval(interval);
+          interval = undefined;
+        } else {
+          interval = setInterval(step, 100);
         }
       }
     });

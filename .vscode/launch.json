@@ -19,6 +19,22 @@
             "protocol": "inspector",
             "outputCapture": "std",
             "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "ts-node current",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "./src/advent-of-code-2022/day-22/index.ts"
+            ],
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register"
+            ],
+            "cwd": "${workspaceRoot}",
+            "protocol": "inspector",
+            "outputCapture": "std",
+            "internalConsoleOptions": "openOnSessionStart"
         }
     ]
 }
