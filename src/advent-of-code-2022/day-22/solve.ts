@@ -83,30 +83,12 @@ export function* process(
 
       [boundary, direction] = onOutOfBounds(boundary, player.direction);
 
-      // while (boundary[oppositeDir]) {
-      //   boundary = boundary[oppositeDir];
-      // }
-
-      // if (
-      //   nextboundary.row !== boundary.row &&
-      //   nextboundary.column !== nextboundary.column
-      // ) {
-      //   debugger;
-      // }
-      // if (nextboundary[target] !== boundary[target]) {
-      //   debugger;
-      // }
-
-      // if (boundary.isWall) {
-      //   if (!nextboundary.isWall) debugger;
-
-      //   return;
-      // }
+      if (boundary.isWall) {
+        return;
+      }
 
       next.row = boundary.row;
       next.column = boundary.column;
-
-      next[target] = boundary[target];
 
       player.column = next.column;
       player.row = next.row;
@@ -143,7 +125,7 @@ export const getOnOutOfBounds1 = (tiles: Map<string, Tile>) => {
 
     while (true) {
       let next = { ...current, [target]: current[target] + shift };
-      next = tiles.get(getKey(current.column, current.row));
+      next = tiles.get(getKey(next.column, next.row));
 
       if (!next) {
         break;
